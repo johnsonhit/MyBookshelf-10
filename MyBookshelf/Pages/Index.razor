@@ -1,0 +1,68 @@
+﻿@page "/"
+
+@using MyBookshelf.Data
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@*
+
+    Using OwningComponentBase ensures that the service and related services
+
+    that share its scope are disposed with the component.
+
+    Otherwise DbContext in ForecastService will live for the life of the
+
+    connection, which may be problematic if clients stay
+
+    connected for a long time.
+
+    We access WeatherForecastService using @Service
+
+*@
+
+@inherits OwningComponentBase<BookshelfService>
+
+<AuthorizeView>
+
+    <!-- Show this section if the user is logged in -->
+
+    <Authorized>
+
+        <h4>Hello, @context.User.Identity.Name!</h4>
+        <br />
+        <h5>You have added @readBookNumber books to read list</h5>
+        <h5>You have added @desiredBookNumber books to desired</h5>
+
+    </Authorized>
+
+    <!-- Show this section if the user is not logged in -->
+
+    <NotAuthorized>
+
+        <p>You're not signed in.</p>
+
+    </NotAuthorized>
+
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter]
+
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    int readBookNumber, desiredBookNumber;
+    List<Book> readBooks, desiredBooks;
+    protected override async Task OnInitializedAsync()
+
+    {
+
+        var user = (await authenticationStateTask).User;
+        readBooks = await @Service.GetBookAsync(user.Identity.Name, true);
+        desiredBooks = await @Service.GetBookAsync(user.Identity.Name, false);
+        readBookNumber = readBooks.Count;
+        desiredBookNumber = desiredBooks.Count;
+
+    }
+
+}
+

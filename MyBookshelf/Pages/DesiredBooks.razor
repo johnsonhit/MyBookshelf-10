@@ -1,0 +1,325 @@
+﻿@page "/desiredbooks"
+
+@using MyBookshelf.Data
+    
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@*
+
+    Using OwningComponentBase ensures that the service and related services
+
+    that share its scope are disposed with the component.
+
+    Otherwise DbContext in ForecastService will live for the life of the
+
+    connection, which may be problematic if clients stay
+
+    connected for a long time.
+
+    We access WeatherForecastService using @Service
+
+*@
+
+@inherits OwningComponentBase<BookshelfService>
+
+    <h1>Desired Books</h1>
+
+    <AuthorizeView>
+
+        <!-- Show this section if the user is logged in -->
+
+        <Authorized>
+
+            @if (books == null)
+
+            {
+                <!-- Show this if the current user has no data... yet... -->
+                <p><em>Loading...</em></p>
+            }
+
+            else
+
+            {
+                <!-- Show the books for the current user -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Author</th>
+                            <th>Year</th>
+                            <th>Genre</th>
+                            <th>Date Added</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var book in books)
+
+                        {
+                        <tr>
+                            <td>@book.BookName</td>
+                            <td>@book.AuthorName</td>
+                            <td>@book.YearPublish</td>
+                            <td>@book.BookGenre</td>
+                            <td>@book.DateAdd.Value.ToShortDateString()</td>
+                            <td>
+                                <!-- Edit the current book -->
+                                <button class="btn btn-primary"
+                                        @onclick="(() => EditBook(book))">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+
+                        }
+                    </tbody>
+                </table>
+
+                <p>
+
+                    <!-- Add a new book -->
+                    <button class="btn btn-primary"
+                            @onclick="AddNewBook">
+                        Add New Book
+                    </button>
+                </p>
+                @if (ShowPopup)
+
+                {
+
+                    <!-- This is the popup to create or edit a book -->
+
+                    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+
+                        <div class="modal-dialog">
+
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+
+                                    <h3 class="modal-title">Edit Book</h3>
+
+                                    <!-- Button to close the popup -->
+
+                                    <button type="button" class="close"
+                                            @onclick="ClosePopup">
+
+                                        <span aria-hidden="true">X</span>
+                                    </button>
+                                </div>
+
+                                <!-- Edit form for the current book -->
+
+                                <div class="modal-body">
+
+                                    <input class="form-control" type="text"
+                                           placeholder="Book"
+                                           @bind="objBook.BookName" />
+
+                                    <input class="form-control" type="text"
+                                           placeholder="Author"
+                                           @bind="objBook.AuthorName" />
+
+                                    <input class="form-control" type="text"
+                                           placeholder="Year"
+                                           @bind="objBook.YearPublish" />
+                                    <input class="form-control" type="text"
+                                           placeholder="Genre"
+                                           @bind="objBook.BookGenre" />
+                                    
+                                    <input type="checkbox" @bind="objBook.IsRead" />
+                                    Move book to read
+                                    <br />
+
+                                    <!-- Button to save the book -->
+
+                                    <button class="btn btn-primary"
+                                            @onclick="SaveBook">
+                                        Save
+                                    </button>
+
+                                    <!-- Only show delete button if not a new record -->
+
+                                    @if (objBook.Id > 0)
+
+                                    {
+
+                                        <!-- Button to delete the book -->
+                                        <button class="btn btn-primary"
+                                                @onclick="DeleteBook">
+
+                                            Delete
+                                        </button>
+
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            }
+        </Authorized>
+
+        <!-- Show this section if the user is not logged in -->
+
+        <NotAuthorized>
+
+            <p>You're not signed in.</p>
+
+        </NotAuthorized>
+
+    </AuthorizeView>
+
+@code {
+    // AuthenticationState is available as a CascadingParameter
+
+    [CascadingParameter]
+
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    List<Book> books;
+
+    protected override async Task OnInitializedAsync()
+
+    {
+
+        // Get the current user
+
+        var user = (await authenticationStateTask).User;
+
+        // Get the books for the current user
+        // We access WeatherForecastService using @Service
+
+        books = await @Service.GetBookAsync(user.Identity.Name, false);
+
+    }
+
+    Book objBook = new Book();
+
+    bool ShowPopup = false;
+
+    void ClosePopup()
+
+    {
+
+        // Close the Popup
+
+        ShowPopup = false;
+
+    }
+
+    void AddNewBook()
+
+    {
+
+        // Make new book
+
+        objBook = new Book();
+
+        // Set Id to 0 so we know it is a new record
+
+        objBook.Id = 0;
+
+        // Open the Popup
+
+        ShowPopup = true;
+
+    }
+
+    async Task SaveBook()
+
+    {
+
+        // Close the Popup
+
+        ShowPopup = false;
+
+        // Get the current user
+
+        var user = (await authenticationStateTask).User;
+
+        // A new book will have the Id set to 0
+
+        if (objBook.Id == 0)
+
+        {
+
+            // Create new book
+
+            Book objNewBook = new Book();
+
+            objNewBook.DateAdd = System.DateTime.Now;
+
+            objNewBook.BookName = objBook.BookName;
+
+            objNewBook.AuthorName = objBook.AuthorName;
+
+            objNewBook.YearPublish = Convert.ToInt32(objBook.YearPublish);
+
+            objNewBook.BookGenre = objBook.BookGenre;
+
+            objNewBook.UserName = user.Identity.Name;
+
+            objNewBook.IsRead = false;
+
+            // Save the result
+
+            var result = @Service.CreateBookAsync(objNewBook);
+
+        }
+
+        else
+
+        {
+
+            // This is an update
+            var result = @Service.UpdateBookAsync(objBook);
+
+        }
+
+        // Get the books for the current user
+
+        books = await @Service.GetBookAsync(user.Identity.Name, false);
+
+    }
+
+    void EditBook(Book book)
+
+    {
+
+        // Set the selected forecast
+
+        // as the current forecast
+
+        objBook = book;
+
+        // Open the Popup
+
+        ShowPopup = true;
+
+    }
+
+    async Task DeleteBook()
+
+    {
+
+        // Close the Popup
+
+        ShowPopup = false;
+
+        // Get the current user
+
+        var user = (await authenticationStateTask).User;
+
+        // Delete the book
+
+        var result = @Service.DeleteBookAsync(objBook);
+
+        // Get the books for the current user
+
+        books = await @Service.GetBookAsync(user.Identity.Name, false);
+
+    }
+}
