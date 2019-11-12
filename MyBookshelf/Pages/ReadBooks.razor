@@ -23,7 +23,7 @@
             else
             {
                 <!-- Show the books for the current user -->
-                <table class="table table-striped table-sm">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Book</th>
@@ -99,6 +99,8 @@
                                            placeholder="Genre"
                                            @bind="objBook.BookGenre" />
 
+                                    <input type="checkbox" @bind="objBook.IsRead" />
+                                    Move book to desired
                                     <br />
 
                                     <!-- Button to save the book -->
