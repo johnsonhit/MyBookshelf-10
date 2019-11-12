@@ -3,21 +3,6 @@
 @using MyBookshelf.Data
     
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@*
-
-    Using OwningComponentBase ensures that the service and related services
-
-    that share its scope are disposed with the component.
-
-    Otherwise DbContext in ForecastService will live for the life of the
-
-    connection, which may be problematic if clients stay
-
-    connected for a long time.
-
-    We access WeatherForecastService using @Service
-
-*@
 
 @inherits OwningComponentBase<BookshelfService>
 
@@ -87,17 +72,11 @@
                 @if (ShowPopup)
 
                 {
-
                     <!-- This is the popup to create or edit a book -->
-
                     <div class="modal" tabindex="-1" style="display:block" role="dialog">
-
                         <div class="modal-dialog">
-
                             <div class="modal-content">
-
                                 <div class="modal-header">
-
                                     <h3 class="modal-title">Edit Book</h3>
 
                                     <!-- Button to close the popup -->
@@ -144,14 +123,12 @@
                                     @if (objBook.Id > 0)
 
                                     {
-
                                         <!-- Button to delete the book -->
                                         <button class="btn btn-primary"
                                                 @onclick="DeleteBook">
 
                                             Delete
                                         </button>
-
                                     }
                                 </div>
                             </div>
@@ -184,14 +161,11 @@
     protected override async Task OnInitializedAsync()
 
     {
-
         // Get the current user
-
         var user = (await authenticationStateTask).User;
 
         // Get the books for the current user
-        // We access WeatherForecastService using @Service
-
+        // We access BookshelfService using @Service
         books = await @Service.GetBookAsync(user.Identity.Name, false);
 
     }
@@ -203,69 +177,47 @@
     void ClosePopup()
 
     {
-
         // Close the Popup
-
         ShowPopup = false;
-
     }
 
     void AddNewBook()
 
     {
-
         // Make new book
-
         objBook = new Book();
 
         // Set Id to 0 so we know it is a new record
-
         objBook.Id = 0;
 
         // Open the Popup
-
         ShowPopup = true;
-
     }
 
     async Task SaveBook()
 
     {
-
         // Close the Popup
-
         ShowPopup = false;
 
         // Get the current user
-
         var user = (await authenticationStateTask).User;
 
         // A new book will have the Id set to 0
-
         if (objBook.Id == 0)
 
         {
-
             // Create new book
-
             Book objNewBook = new Book();
-
             objNewBook.DateAdd = System.DateTime.Now;
-
             objNewBook.BookName = objBook.BookName;
-
             objNewBook.AuthorName = objBook.AuthorName;
-
             objNewBook.YearPublish = Convert.ToInt32(objBook.YearPublish);
-
             objNewBook.BookGenre = objBook.BookGenre;
-
             objNewBook.UserName = user.Identity.Name;
-
             objNewBook.IsRead = false;
 
             // Save the result
-
             var result = @Service.CreateBookAsync(objNewBook);
 
         }
@@ -273,14 +225,11 @@
         else
 
         {
-
             // This is an update
             var result = @Service.UpdateBookAsync(objBook);
-
         }
 
         // Get the books for the current user
-
         books = await @Service.GetBookAsync(user.Identity.Name, false);
 
     }
@@ -289,14 +238,10 @@
 
     {
 
-        // Set the selected forecast
-
-        // as the current forecast
-
+        // Set the selected book as the current book
         objBook = book;
 
         // Open the Popup
-
         ShowPopup = true;
 
     }
@@ -306,19 +251,15 @@
     {
 
         // Close the Popup
-
         ShowPopup = false;
 
         // Get the current user
-
         var user = (await authenticationStateTask).User;
 
         // Delete the book
-
         var result = @Service.DeleteBookAsync(objBook);
 
         // Get the books for the current user
-
         books = await @Service.GetBookAsync(user.Identity.Name, false);
 
     }

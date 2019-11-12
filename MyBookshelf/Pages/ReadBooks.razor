@@ -3,21 +3,6 @@
 @using MyBookshelf.Data
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@*
-
-    Using OwningComponentBase ensures that the service and related services
-
-    that share its scope are disposed with the component.
-
-    Otherwise DbContext in ForecastService will live for the life of the
-
-    connection, which may be problematic if clients stay
-
-    connected for a long time.
-
-    We access WeatherForecastService using @Service
-
-*@
 
 @inherits OwningComponentBase<BookshelfService>
 
@@ -30,14 +15,12 @@
         <Authorized>
 
             @if (books == null)
-
             {
                 <!-- Show this if the current user has no data... yet... -->
                 <p><em>Loading...</em></p>
             }
 
             else
-
             {
                 <!-- Show the books for the current user -->
                 <table class="table">
@@ -55,7 +38,6 @@
                     <tbody>
 
                         @foreach (var book in books)
-
                         {
                         <tr>
                             <td>@book.BookName</td>
@@ -71,13 +53,11 @@
                                 </button>
                             </td>
                         </tr>
-
                         }
                     </tbody>
                 </table>
 
                 <p>
-
                     <!-- Add a new book -->
                     <button class="btn btn-primary"
                             @onclick="AddNewBook">
@@ -87,30 +67,21 @@
                 @if (ShowPopup)
 
                 {
-
                     <!-- This is the popup to create or edit a book -->
 
                     <div class="modal" tabindex="-1" style="display:block" role="dialog">
-
                         <div class="modal-dialog">
-
                             <div class="modal-content">
-
                                 <div class="modal-header">
-
                                     <h3 class="modal-title">Edit Book</h3>
-
                                     <!-- Button to close the popup -->
-
                                     <button type="button" class="close"
                                             @onclick="ClosePopup">
-
                                         <span aria-hidden="true">X</span>
                                     </button>
                                 </div>
 
                                 <!-- Edit form for the current book -->
-
                                 <div class="modal-body">
 
                                     <input class="form-control" type="text"
@@ -140,16 +111,12 @@
                                     <!-- Only show delete button if not a new record -->
 
                                     @if (objBook.Id > 0)
-
                                     {
-
                                         <!-- Button to delete the book -->
                                         <button class="btn btn-primary"
                                                 @onclick="DeleteBook">
-
                                             Delete
                                         </button>
-
                                     }
                                 </div>
                             </div>
@@ -203,7 +170,6 @@
     {
 
         // Close the Popup
-
         ShowPopup = false;
 
     }
@@ -213,15 +179,12 @@
     {
 
         // Make new book
-
         objBook = new Book();
 
         // Set Id to 0 so we know it is a new record
-
         objBook.Id = 0;
 
         // Open the Popup
-
         ShowPopup = true;
 
     }
@@ -231,55 +194,36 @@
     {
 
         // Close the Popup
-
         ShowPopup = false;
 
         // Get the current user
-
         var user = (await authenticationStateTask).User;
 
         // A new book will have the Id set to 0
-
         if (objBook.Id == 0)
-
-
         {
-
             // Create new read book
-
             Book objNewBook = new Book();
-
             objNewBook.DateAdd = System.DateTime.Now;
-
             objNewBook.BookName = objBook.BookName;
-
             objNewBook.AuthorName = objBook.AuthorName;
-
             objNewBook.YearPublish = Convert.ToInt32(objBook.YearPublish);
-
             objNewBook.BookGenre = objBook.BookGenre;
-
             objNewBook.UserName = user.Identity.Name;
-
             objNewBook.IsRead = true;
 
             // Save the result
-
             var result = @Service.CreateBookAsync(objNewBook);
 
         }
 
         else
-
         {
-
             // This is an update
             var result = @Service.UpdateBookAsync(objBook);
-
         }
 
         // Get the books for the current user
-
         books = await @Service.GetBookAsync(user.Identity.Name, true);
 
     }
@@ -288,14 +232,10 @@
 
     {
 
-        // Set the selected forecast
-
-        // as the current forecast
-
+        // Set the selected book as the current book
         objBook = book;
 
         // Open the Popup
-
         ShowPopup = true;
 
     }
@@ -303,21 +243,16 @@
     async Task DeleteBook()
 
     {
-
         // Close the Popup
-
         ShowPopup = false;
 
         // Get the current user
-
         var user = (await authenticationStateTask).User;
 
         // Delete the book
-
         var result = @Service.DeleteBookAsync(objBook);
 
         // Get the books for the current user
-
         books = await @Service.GetBookAsync(user.Identity.Name, true);
 
     }
