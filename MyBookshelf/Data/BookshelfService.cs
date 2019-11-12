@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MyBookshelf.Data;
 
 namespace MyBookshelf.Data
@@ -16,10 +17,38 @@ namespace MyBookshelf.Data
             _context = context;
         }
 
-        // get book (read or desired)
-        public Task<List<Book>>
-            GetBookAsync(string strCurrentUser, bool isRead)
 
+        // count books
+        public Task<int> GetNumberReadBooksAsync(bool isRead)
+        {
+            if (isRead == true)
+            {
+                _context.Books.Where(c =>c.IsRead == true).Load();
+            }
+            else if (isRead == false)
+            {
+                _context.Books.Where(c =>c.IsRead == false).Load();
+            }
+            
+            return Task.FromResult(_context.Books.Local.Count);
+        }
+
+        public Task<int> GetNumberDesiredBooksAsync(bool isRead)
+        {
+            if (isRead == true)
+            {
+                _context.Books.Where(c => c.IsRead == true).Load();
+            }
+            else if (isRead == false)
+            {
+                _context.Books.Where(c => c.IsRead == false).Load();
+            }
+
+            return Task.FromResult(_context.Books.Local.Count);
+        }
+
+        // get book (read or desired)
+        public Task<List<Book>> GetBookAsync(string strCurrentUser, bool isRead)
         {
             List<Book> colBooks = new List<Book>();
             if (isRead == true)
@@ -42,8 +71,7 @@ namespace MyBookshelf.Data
         }
 
         // create book
-        public Task<Book>
-            CreateBookAsync(Book objBook)
+        public Task<Book> CreateBookAsync(Book objBook)
         {
             _context.Books.Add(objBook);
             _context.SaveChanges();
@@ -51,8 +79,7 @@ namespace MyBookshelf.Data
         }
 
         // update book(s)
-        public Task<bool>
-            UpdateBookAsync(Book objBook)
+        public Task<bool> UpdateBookAsync(Book objBook)
         {
             var ExistingBook = _context.Books
                                 .Where(x => x.Id == objBook.Id)
@@ -77,9 +104,7 @@ namespace MyBookshelf.Data
             return Task.FromResult(true);
         }
 
-        public Task<bool>
-            DeleteBookAsync(Book objBook)
-
+        public Task<bool> DeleteBookAsync(Book objBook)
         {
             var ExistingBook = _context.Books
                                .Where(x => x.Id == objBook.Id)
