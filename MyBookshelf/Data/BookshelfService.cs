@@ -18,22 +18,22 @@ namespace MyBookshelf.Data
         }
 
 
-        // count books
-        public Task<int> GetNumberReadBooksAsync(bool isRead)
-        {
-            if (isRead == true)
-            {
-                _context.Books.Where(c =>c.IsRead == true).Load();
-            }
-            else if (isRead == false)
-            {
-                _context.Books.Where(c =>c.IsRead == false).Load();
-            }
-            
-            return Task.FromResult(_context.Books.Local.Count);
-        }
+        //// count books
+        //public Task<int> GetNumberReadBooksAsync(bool onlyRead)
+        //{
+        //    if (onlyRead == true)
+        //    {
+        //        _context.Books.Where(c => c.IsRead == true).Load();
+        //    }
+        //    else if (onlyRead == false)
+        //    {
+        //        _context.Books.Where(c => c.IsRead == false).Load();
+        //    }
 
-        public Task<int> GetNumberDesiredBooksAsync(bool isRead)
+        //    return Task.FromResult(_context.Books.Local.Count);
+        //}
+
+        public Task<int> GetCountBooksAsync(bool isRead)
         {
             if (isRead == true)
             {
@@ -66,7 +66,7 @@ namespace MyBookshelf.Data
                  where (book.UserName == strCurrentUser && book.IsRead == false)
                  select book).ToList();
             }
-            
+
             return Task.FromResult(colBooks);
         }
 

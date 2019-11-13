@@ -106,10 +106,13 @@
                                     <input class="form-control" type="text"
                                            placeholder="Genre"
                                            @bind="objBook.BookGenre" />
-                                    
-                                    <input type="checkbox" @bind="objBook.IsRead" />
-                                    Move book to read
-                                    <br />
+
+                                    <!-- Checkbox for move to read -->
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" @bind="objBook.IsRead" class="custom-control-input" id="defaultUnchecked" />
+                                        <label class="custom-control-label" for="defaultUnchecked">Move to read</label>
+                                    </div>
+
 
                                     <!-- Button to save the book -->
 

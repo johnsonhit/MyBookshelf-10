@@ -6,39 +6,39 @@
 
 @inherits OwningComponentBase<BookshelfService>
 
-    <h1>Read Books</h1>
+<h1>Read Books</h1>
 
-    <AuthorizeView>
+<AuthorizeView>
 
-        <!-- Show this section if the user is logged in -->
+    <!-- Show this section if the user is logged in -->
 
-        <Authorized>
+    <Authorized>
 
-            @if (books == null)
-            {
-                <!-- Show this if the current user has no data... yet... -->
-                <p><em>Loading...</em></p>
-            }
+        @if (books == null)
+        {
+            <!-- Show this if the current user has no data... yet... -->
+            <p><em>Loading...</em></p>
+        }
 
-            else
-            {
-                <!-- Show the books for the current user -->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Book</th>
-                            <th>Author</th>
-                            <th>Year</th>
-                            <th>Genre</th>
-                            <th>Date Added</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+        else
+        {
+            <!-- Show the books for the current user -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Author</th>
+                        <th>Year</th>
+                        <th>Genre</th>
+                        <th>Date Added</th>
+                        <th></th>
+                    </tr>
+                </thead>
 
-                    <tbody>
+                <tbody>
 
-                        @foreach (var book in books)
-                        {
+                    @foreach (var book in books)
+                    {
                         <tr>
                             <td>@book.BookName</td>
                             <td>@book.AuthorName</td>
@@ -53,91 +53,93 @@
                                 </button>
                             </td>
                         </tr>
-                        }
-                    </tbody>
-                </table>
+                    }
+                </tbody>
+            </table>
 
-                <p>
-                    <!-- Add a new book -->
-                    <button class="btn btn-primary"
-                            @onclick="AddNewBook">
-                        Add New Book
-                    </button>
-                </p>
-                @if (ShowPopup)
+            <p>
+                <!-- Add a new book -->
+                <button class="btn btn-primary"
+                        @onclick="AddNewBook">
+                    Add New Book
+                </button>
+            </p>
+            @if (ShowPopup)
 
-                {
-                    <!-- This is the popup to create or edit a book -->
+            {
+                <!-- This is the popup to create or edit a book -->
 
-                    <div class="modal" tabindex="-1" style="display:block" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h3 class="modal-title">Edit Book</h3>
-                                    <!-- Button to close the popup -->
-                                    <button type="button" class="close"
-                                            @onclick="ClosePopup">
-                                        <span aria-hidden="true">X</span>
-                                    </button>
-                                </div>
+                <div class="modal" tabindex="-1" style="display:block" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title">Edit Book</h3>
+                                <!-- Button to close the popup -->
+                                <button type="button" class="close"
+                                        @onclick="ClosePopup">
+                                    <span aria-hidden="true">X</span>
+                                </button>
+                            </div>
 
-                                <!-- Edit form for the current book -->
-                                <div class="modal-body">
+                            <!-- Edit form for the current book -->
+                            <div class="modal-body">
 
-                                    <input class="form-control" type="text"
-                                           placeholder="Book"
-                                           @bind="objBook.BookName" />
+                                <input class="form-control" type="text"
+                                       placeholder="Book"
+                                       @bind="objBook.BookName" />
 
-                                    <input class="form-control" type="text"
-                                           placeholder="Author"
-                                           @bind="objBook.AuthorName" />
+                                <input class="form-control" type="text"
+                                       placeholder="Author"
+                                       @bind="objBook.AuthorName" />
 
-                                    <input class="form-control" type="text"
-                                           placeholder="Year"
-                                           @bind="objBook.YearPublish" />
-                                    <input class="form-control" type="text"
-                                           placeholder="Genre"
-                                           @bind="objBook.BookGenre" />
+                                <input class="form-control" type="text"
+                                       placeholder="Year"
+                                       @bind="objBook.YearPublish" />
+                                <input class="form-control" type="text"
+                                       placeholder="Genre"
+                                       @bind="objBook.BookGenre" />
 
-                                    <input type="checkbox" @bind="objBook.IsRead" />
-                                    Move book to desired
-                                    <br />
+                                <!-- Button to save the book -->
 
-                                    <!-- Button to save the book -->
+                                <button class="btn btn-primary"
+                                        @onclick="SaveBook">
+                                    Save
+                                </button>
 
+                                <!-- Button to move in desired -->
+                                <button class="btn btn-primary"
+                                        @onclick="MoveToDesiredBooks">
+                                    Move to desired
+                                </button>
+
+                                <!-- Only show delete button if not a new record -->
+
+                                @if (objBook.Id > 0)
+                                {
+                                    <!-- Button to delete the book -->
                                     <button class="btn btn-primary"
-                                            @onclick="SaveBook">
-                                        Save
+                                            @onclick="DeleteBook">
+                                        Delete
                                     </button>
-
-                                    <!-- Only show delete button if not a new record -->
-
-                                    @if (objBook.Id > 0)
-                                    {
-                                        <!-- Button to delete the book -->
-                                        <button class="btn btn-primary"
-                                                @onclick="DeleteBook">
-                                            Delete
-                                        </button>
-                                    }
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
+                </div>
 
-                }
             }
-        </Authorized>
+        }
+    </Authorized>
 
-        <!-- Show this section if the user is not logged in -->
+    <!-- Show this section if the user is not logged in -->
 
-        <NotAuthorized>
+    <NotAuthorized>
 
-            <p>You're not signed in.</p>
+        <p>You're not signed in.</p>
 
-        </NotAuthorized>
+    </NotAuthorized>
 
-    </AuthorizeView>
+</AuthorizeView>
 
 @code {
     // AuthenticationState is available as a CascadingParameter
@@ -148,6 +150,8 @@
 
     List<Book> books;
 
+
+
     protected override async Task OnInitializedAsync()
 
     {
@@ -157,7 +161,7 @@
         var user = (await authenticationStateTask).User;
 
         // Get the books for the current user
-        // We access WeatherForecastService using @Service
+        // We access BookshelfService using @Service
 
         books = await @Service.GetBookAsync(user.Identity.Name, true);
 
@@ -228,6 +232,21 @@
         // Get the books for the current user
         books = await @Service.GetBookAsync(user.Identity.Name, true);
 
+    }
+
+    async Task MoveToDesiredBooks()
+    {
+        ShowPopup = false;
+
+        // Get the current user
+        var user = (await authenticationStateTask).User;
+        objBook.IsRead = false;
+
+        // This is an update
+        var result = @Service.UpdateBookAsync(objBook);
+
+        // Get the books for the current user
+        books = await @Service.GetBookAsync(user.Identity.Name, true);
     }
 
     void EditBook(Book book)

@@ -40,8 +40,8 @@
 
     {
         var user = (await authenticationStateTask).User;
-        readBookNumber = await @Service.GetNumberReadBooksAsync(true);
-        desiredBookNumber = await @Service.GetNumberDesiredBooksAsync(true);
+        readBookNumber = await @Service.GetCountBooksAsync(true);
+        desiredBookNumber = await @Service.GetCountBooksAsync(false);
     }
 
 }
