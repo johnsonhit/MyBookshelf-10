@@ -70,12 +70,28 @@ namespace MyBookshelf.Data
             return Task.FromResult(colBooks);
         }
 
+        // Get genres
+        public Task<List<Genre>> GetGenresAsync()
+        {
+            List<Genre> colGenres = new List<Genre>();
+            colGenres = _context.Genres.ToList();
+            return Task.FromResult(colGenres);
+        }
+
         // create book
         public Task<Book> CreateBookAsync(Book objBook)
         {
             _context.Books.Add(objBook);
             _context.SaveChanges();
             return Task.FromResult(objBook);
+        }
+
+        // Create genre
+        public Task<Genre> CreateGenreAsync(Genre objGenre)
+        {
+            _context.Genres.Add(objGenre);
+            _context.SaveChanges();
+            return Task.FromResult(objGenre);
         }
 
         // update book(s)
@@ -104,6 +120,29 @@ namespace MyBookshelf.Data
             return Task.FromResult(true);
         }
 
+        // Update genre(s)
+        public Task<bool> UpdateGenreAsync(Genre objGenre)
+        {
+            var ExistingGenre = _context.Genres
+                                .Where(x => x.Id == objGenre.Id)
+                                .FirstOrDefault();
+
+            if (ExistingGenre != null)
+            {
+                ExistingGenre.Name = objGenre.Name;
+
+                _context.SaveChanges();
+            }
+
+            else
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        // Delete book
         public Task<bool> DeleteBookAsync(Book objBook)
         {
             var ExistingBook = _context.Books
@@ -113,6 +152,27 @@ namespace MyBookshelf.Data
             if (ExistingBook != null)
             {
                 _context.Books.Remove(ExistingBook);
+                _context.SaveChanges();
+            }
+
+            else
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        // Delete genre
+        public Task<bool> DeleteGenreAsync(Genre objGenre)
+        {
+            var ExistingGenre = _context.Genres
+                               .Where(x => x.Id == objGenre.Id)
+                               .FirstOrDefault();
+
+            if (ExistingGenre != null)
+            {
+                _context.Genres.Remove(ExistingGenre);
                 _context.SaveChanges();
             }
 
